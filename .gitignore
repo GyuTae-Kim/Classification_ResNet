@@ -127,3 +127,9 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+# TensorFlow
+.h5
+.ckpt
+checkpoint
+log.data*
