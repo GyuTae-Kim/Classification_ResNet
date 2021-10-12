@@ -20,6 +20,7 @@ def Conv(x, filters, kernel_size=3, stride=1, epsilon=1.001e-5, use_bias=False, 
                       kernel_size=kernel_size,
                       strides=stride,
                       use_bias=use_bias,
+                      kernel_regularizer='l2',
                       name=name + '_conv')(x)
     x = layers.BatchNormalization(epsilon=epsilon,
                                   name=name + '_bn')(x)
@@ -54,6 +55,7 @@ def res_block(x, filters, kernel_size=3, stride=1, epsilon=1.001e-5, conv_shortc
         shortcut = layers.Conv2D(filters=4 * filters,
                                  kernel_size=1,
                                  strides=stride,
+                                 kernel_regularizer='l2',
                                  name=name + '_0_conv')(x)
     else:
         shortcut = layers.MaxPool2D(pool_size=1,
@@ -76,6 +78,7 @@ def res_block(x, filters, kernel_size=3, stride=1, epsilon=1.001e-5, conv_shortc
     
     x = layers.Conv2D(filters=4 * filters,
                       kernel_size=1,
+                      kernel_regularizer='l2',
                       name=name + '_3_conv')(x)
     x = layers.Add(name=name + '_out')([shortcut, x])
     

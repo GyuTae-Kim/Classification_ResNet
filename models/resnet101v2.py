@@ -1,3 +1,4 @@
+import tensorflow as tf
 from tensorflow.keras.applications import imagenet_utils
 from tensorflow.keras import layers
 from tensorflow.keras import Model
@@ -5,7 +6,6 @@ import tensorflow.keras.backend as K
 from tensorflow.python.keras.utils import data_utils
 
 from .common import stack_fn
-from utils.general import parse_model
 
 
 WEIGHTS_HASH = ('6343647c601c52e1368623803854d971',
@@ -60,6 +60,7 @@ def feature_extract(input_shape=None,
                       kernel_size=7,
                       strides=2,
                       use_bias=use_bias,
+                      kernel_regularizer='l2',
                       name='conv1_conv')(x)
     x = layers.ZeroPadding2D(padding=((1, 1), (1, 1)),
                              name='pool1_pad')(x)
@@ -95,9 +96,11 @@ def feature_extract(input_shape=None,
     
     return img_input, model
 
-
-def classification(model_dict):
-    m = parse_model(model_dict)
+def classification(n_cls):
+    m = tf.keras.Sequential([
+        layers.Dense(512, activation='relu', kernel_regularizer='l2', name='classification_1'),
+        layers.Dense(n_cls, activation='softmax', name='classification_2')
+    ])
     
     return m
 
@@ -110,7 +113,7 @@ class ResNet101V2(Model):
         self.config = config
         
         self.base_layer = feature_extract()
-        self.classfier = classification()
+        self.classfier = classification(len(config['param']['n_cls']))
         pass
         
     def call(self, inputs):
