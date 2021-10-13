@@ -1,3 +1,4 @@
+import os
 import itertools
 
 import matplotlib.pyplot as plt
@@ -7,7 +8,7 @@ import numpy as np
 from utils.general import calculate_confusion_matrix
 
 
-def visual_count_label(train_labels, val_labels):
+def visual_count_label(train_labels, val_labels, path):
     arg_train = np.argmax(train_labels, axis=1)
     arg_val = np.argmax(val_labels, axis=1)
     
@@ -23,7 +24,7 @@ def visual_count_label(train_labels, val_labels):
     ax2.set_title('Valid Data', fontsize=16)
     
     plt.tight_layout()
-    plt.savefig('count_label.png')
+    plt.savefig(os.path.join(path, 'count_label.png'))
     plt.clf()
     
     print('Train Data Size:', len(arg_train))
@@ -31,7 +32,7 @@ def visual_count_label(train_labels, val_labels):
     print('---------------------------------')
     print('Total:', len(arg_train) + len(arg_val))
     
-def visual_confusion_matrix(submission):
+def visual_confusion_matrix(submission, path):
     conf = calculate_confusion_matrix(submission['target'], submission['pred'])
     acc = np.trace(conf) / float(np.sum(conf))
     misclass = 1 - acc
@@ -56,10 +57,10 @@ def visual_confusion_matrix(submission):
     plt.tight_layout()
     plt.xlabel('Predicted label accuracy={:0.4f}; missclass={:0.4f}'.format(acc, misclass))
     plt.ylabel('True label')
-    plt.savefig('confusion_matrix.png')
+    plt.savefig(os.path.join(path, 'confusion_matrix.png'))
     plt.clf()
     
-def visual_f2score(precision, recall, precisions, recalls):
+def visual_f1score(precision, recall, precisions, recalls, path):
     F1_score = 2 * (precision * precision) / (recall, precision)
     plt.plot(F1_score, linestyle='--', linewidth=3., label='F1-Score')
     
@@ -67,6 +68,18 @@ def visual_f2score(precision, recall, precisions, recalls):
     for i in range(len(F1_scores[0])):
         plt.plot(F1_scores[i], label=f'Class {i} F1-Score')
     
+    plt.tight_layout()
+    plt.title('F1 Score')
+    plt.xlabel('Epoch')
+    plt.ylabel('F1 Score')
     plt.legend(loc='lower right')
-    plt.savefig('F1-Score.png')
+    plt.savefig(os.path.join(path, 'F1-Score.png'))
+    plt.clf()
+
+def visual_learning_rate(lr, path):
+    plt.plot(lr)
+    plt.tight_layout()
+    plt.xlabel('Epoch')
+    plt.ylabel('Learning rate')
+    plt.savefig(os.path.join(path, 'learning_rate.png'))
     plt.clf()

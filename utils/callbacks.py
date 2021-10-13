@@ -10,15 +10,16 @@ from utils.general import mkdir, remove_all
 
 class LRCallback(Callback):
     
-    def __init__(self, schedule, logger):
+    def __init__(self, lr, schedule, memory):
         super(LRCallback, self).__init__()
         
+        self.lr = lr
         self.schedule = schedule
-        self.logger = logger
+        self.memory = memory
         
     def on_train_begin(self, logs=None):
         lr = float(K.get_value(self.model.optimizer.learning_rate))
-        self.logger.save_lr_log(lr)
+        self.memory.save_lr_log(lr)
 
     def on_train_end(self, logs=None):
         pass
@@ -26,13 +27,11 @@ class LRCallback(Callback):
     def on_epoch_begin(self, epoch, logs=None):
         if not hasattr(self.model.optimizer, 'lr'):
             raise ValueError('Optimizer must have a "lr" attribute.')
-        # Get the current learning rate from models's optimizer.
-        lr = float(K.get_value(self.model.optimizer.learning_rate))
         # Call schedule function to get the scheduled learning rate.
-        scheduled_lr = self.schedule(epoch, lr)
+        scheduled_lr = self.schedule(epoch, self.lr)
         # Set the value back to the optimizer before this epoch starts.
         K.set_value(self.model.optimizer.lr, scheduled_lr)
-        self.logger.save_lr_log(scheduled_lr)
+        self.memory.save_lr_log(scheduled_lr)
 
     def on_epoch_end(self, epoch, logs=None):
         pass
@@ -80,11 +79,11 @@ class ModelSaverCallback(Callback):
         self.epoch_checkpoint_path = os.path.join(self.epoch_checkpoint_dir, 'cp-{epoch:04d}.ckpt')
         
         self.step = 0
-        self.best = np.INF
+        self.best = np.Inf
     
     def on_train_begin(self, logs=None):
         self.step = 0
-        self.best = np.INF
+        self.best = np.Inf
         mkdir(self.epoch_checkpoint_dir)
         mkdir(self.best_checkpoint_dir)
 

@@ -1,7 +1,7 @@
 from tensorflow.keras import layers
 
 
-def Conv(x, filters, kernel_size=3, stride=1, epsilon=1.001e-5, use_bias=False, name=None):
+def Conv(x, filters, kernel_size=3, strides=1, epsilon=1.001e-5, use_bias=False, name=None):
     """A convolution layer.
 
     Args:
@@ -18,7 +18,7 @@ def Conv(x, filters, kernel_size=3, stride=1, epsilon=1.001e-5, use_bias=False, 
     """
     x = layers.Conv2D(filters=filters,
                       kernel_size=kernel_size,
-                      strides=stride,
+                      strides=strides,
                       use_bias=use_bias,
                       kernel_regularizer='l2',
                       name=name + '_conv')(x)
@@ -102,7 +102,7 @@ def res_stack(x, filters, blocks, stride=2, epsilon=1.001e-5, name=None):
     x = res_block(x=x,
                   filters=filters,
                   epsilon=epsilon,
-                  conv_short_cut=True,
+                  conv_shortcut=True,
                   name=name + '_block1')
     for i in range(2, blocks):
         x = res_block(x=x,

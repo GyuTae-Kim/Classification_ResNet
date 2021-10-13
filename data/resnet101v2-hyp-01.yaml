@@ -1,21 +1,21 @@
 augment:
   # Reference: https://www.tensorflow.org/api_docs/python/tf/keras/preprocessing/image/ImageDataGenerator
-  rotation_range: 20
-  width_shift_range: 0.2
-  height_shift_range: 0.2
-  zoom_range: 0.2
-  horizontal_flip: True
-  vertical_flip: True
+  rotation_range: [-0.2, 0.2]
+  zoom_range: [0.8, 1.0]
+  random_flip: True
 
 optimizer:
   # Default SGD
   adam: False
   momentum: 0.1
-  init_lr: 0.001
+  # SGD=1e-2, Adam=1e-3
+  init_lr: 0.01
+  lrf: 0.1
   # False: linear_decay
   cosine_decay: True
 
-model_params:
+model_param:
+  input_shape: [800, 800, 3]
   use_bias: True
-  pooling: null
+  pooling: 'avg'
   epsilon: 1.001e-5

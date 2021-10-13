@@ -16,9 +16,11 @@ class BaseOptions(object):
     def initialize(self, parser):
         # model parameters
         parser.add_argument('--batch_size', type=int, default=16, help='input batch size')
-        parser.add_argument('--model_params', type=str, default='./data/resnet101v2.yaml', help='chooses which model params to use.')
+        parser.add_argument('--model_params', type=str, default='./data/resnet101v2-hyp-01.yaml', help='chooses which model params to use.')
         # network saving and loading parameters
         parser.add_argument('--use_best', action='store_true', help='whether uses best checkpoint or frequency saved checkpoint')
+        # data parameters
+        parser.add_argument('--datapath', type=str, required=True, help='image dataset path(for training and validation (or testing))')
         
         self.initialized = True
         

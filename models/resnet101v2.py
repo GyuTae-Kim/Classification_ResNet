@@ -45,13 +45,6 @@ def feature_extract(input_shape=None,
         An Input layer and a `keras.Model` instance.
     """
     
-    input_shape = imagenet_utils.obtain_input_shape(input_shape,
-                                                    default_size=224,
-                                                    min_size=32,
-                                                    data_format=K.image_data_format(),
-                                                    required_flatten=False,
-                                                    weights=weights)
-    
     img_input = layers.Input(shape=input_shape)
     
     x = layers.ZeroPadding2D(padding=((3, 3), (3, 3)),
@@ -94,7 +87,7 @@ def feature_extract(input_shape=None,
     elif weights is not None:
         model.load_weights(weights)
     
-    return img_input, model
+    return model
 
 def classification(n_cls):
     m = tf.keras.Sequential([
@@ -107,13 +100,15 @@ def classification(n_cls):
 
 class ResNet101V2(Model):
     
-    def __init__(self, config):
+    def __init__(self, configs):
         super(ResNet101V2, self).__init__()
         
-        self.config = config
+        self.configs = configs
         
-        self.base_layer = feature_extract()
-        self.classfier = classification(len(config['param']['n_cls']))
+        self.base_layer = feature_extract(configs['model_param']['input_shape'],
+                                          pooling=configs['model_param']['pooling'])
+        self.base_layer.summary()
+        self.classfier = classification(configs['param']['n_cls'])
         pass
         
     def call(self, inputs):
