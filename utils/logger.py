@@ -1,13 +1,19 @@
+import logging
+
 import numpy as np
 
 
 class Logger(object):
     
     def __init__(self):
+        self.logger = logging()
         self.initialize()
         self.last_lr = np.INF
     
     def initialize(self):
+        logging.basicConfig(format='%(asctime)s - %(levelname)s - %(name)s -  %(message)s',
+                            datafmt='%m/%d/%Y %H:%M%S',
+                            level=logging.INFO)
         self.train_log = {'lr': []}
         self.test_log = {
             'pred': None,

@@ -1,4 +1,0 @@
-model_params:
-  use_bias: True
-  pooling: null
-  epsilon: 1.001e-5

@@ -7,7 +7,15 @@ augment:
   horizontal_flip: True
   vertical_flip: True
 
-network:
+optimizer:
   # Default SGD
   adam: False
   momentum: 0.1
+  init_lr: 0.001
+  # False: linear_decay
+  cosine_decay: True
+
+model_params:
+  use_bias: True
+  pooling: null
+  epsilon: 1.001e-5

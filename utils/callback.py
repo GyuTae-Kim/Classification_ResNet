@@ -68,19 +68,25 @@ class LRCallback(Callback):
         pass
 
 
-class BestSaverCallback(Callback):
+class ModelSaverCallback(Callback):
     
-    def __init__(self, checkpoint_path=None, check='val_loss'):
-        super(BestSaverCallback, self).__init__()
+    def __init__(self, save_freq=10, checkpoint_path=None):
+        super(ModelSaverCallback, self).__init__()
         
-        self.check = check
-        self.checkpoint_path = checkpoint_path + 'bestcp-{epoch:04d}.ckpt'
-        self.checkpoint_dir = os.path.dirname(self.checkpoint_path)
+        self.save_freq = save_freq
+        self.best_checkpoint_dir = os.path.join(checkpoint_path, 'best')
+        self.best_checkpoint_path = os.path.join(self.best_checkpoint_dir, 'bestcp-{epoch:04d}.ckpt')
+        self.epoch_checkpoint_dir = os.path.join(checkpoint_path, 'epoch')
+        self.epoch_checkpoint_path = os.path.join(self.epoch_checkpoint_dir, 'cp-{epoch:04d}.ckpt')
+        
+        self.step = 0
         self.best = np.INF
     
     def on_train_begin(self, logs=None):
+        self.step = 0
         self.best = np.INF
-        mkdir(self.checkpoint_dir)
+        mkdir(self.epoch_checkpoint_dir)
+        mkdir(self.best_checkpoint_dir)
 
     def on_train_end(self, logs=None):
         pass
@@ -89,13 +95,20 @@ class BestSaverCallback(Callback):
         pass
 
     def on_epoch_end(self, epoch, logs=None):
-        current = logs.get(self.check)
-        if np.less(current, self.best):
-            self.best = current
-            path = self.checkpoint_path.format(epoch=epoch)
-            remove_all(self.checkpoint_dir)
+        cur_loss = logs.get('val_loss')
+        if np.less(cur_loss, self.best):
+            self.best = cur_loss
+            path = self.best_checkpoint_path.format(epoch=epoch)
+            remove_all(self.best_checkpoint_dir)
             self.model.save_weights(path)
-            print('Epoch {epoch:05d}: saving model to {path}'.format(epoch=epoch, path=path))
+            print('Epoch {epoch:04d}: saving best model to {path}'.format(epoch=epoch, path=path))
+        
+        self.step += 1
+        if self.step >= self.save_freq:
+            self.step = 0
+            path = self.epoch_checkpoint_path.format(epoch=epoch)
+            self.model.save_weights(path)
+            print('Epoch {epoch:04d}: saving model to {path}'.format(epoch=epoch, path=path))
 
     def on_test_begin(self, logs=None):
         pass
