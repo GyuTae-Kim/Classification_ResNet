@@ -10,11 +10,10 @@ import math
 
 
 def decode_jpg(image_size=(800, 800)):
-    @tf.function
     def wrapper(file, label=None, image_size=image_size):
         bits = tf.io.read_file(file)
         image = tf.image.decode_jpeg(bits, channels=3)
-        image = tf.cast(image, tf.float32) / 127.5 - 1.
+        image = tf.cast(image, 'float') / 127.5 - 1.
         image = tf.image.resize(image, image_size)
         
         if label is None:
@@ -37,7 +36,6 @@ def augment_layer(augment_dict):
     return aug
 
 def augment_using_layers(aug):
-    @tf.function
     def wrapper(x, y=None, aug=aug):
         x = aug(x)
         

@@ -7,9 +7,12 @@ from tensorflow.python.keras.utils import data_utils
 
 from .common import stack_fn
 
-
+"""
 WEIGHTS_HASH = ('6343647c601c52e1368623803854d971',
                 'c0ed64b8031c3730f411d2eb4eea35b5')
+"""
+WEIGHTS_HASH = ('3ef43a0b657b3be2300d5770ece849e0',
+                   'fac2f116257151a9d068a22e544a4917')
 BASE_WEIGHTS_PATH = (
     'https://storage.googleapis.com/tensorflow/keras-applications/resnet/')
 
@@ -19,7 +22,7 @@ def feature_extract(input_shape=None,
                     use_bias=True,
                     pooling=None,
                     epsilon=1.001e-5,
-                    model_name='resnet101v2'):
+                    model_name='resnet50v2'):
     """Instantiates the ResNet101V2 architecture.
 
     Args:
@@ -92,16 +95,17 @@ def feature_extract(input_shape=None,
 def classification(n_cls):
     m = tf.keras.Sequential([
         layers.Dense(512, activation='relu', kernel_regularizer='l2', name='classification_1'),
-        layers.Dense(n_cls, activation='softmax', name='classification_2')
+        layers.Dense(n_cls, name='classification_2'),
+        layers.Activation('softmax', dtype=tf.float32, name='predictions')
     ])
     
     return m
 
 
-class ResNet101V2(Model):
+class ResNet50V2(Model):
     
     def __init__(self, configs):
-        super(ResNet101V2, self).__init__()
+        super(ResNet50V2, self).__init__()
         
         self.configs = configs
         
@@ -119,5 +123,5 @@ class ResNet101V2(Model):
 
 
 if __name__ == "__main__":
-    m = ResNet101V2(None)
+    m = ResNet50V2(None)
     pass

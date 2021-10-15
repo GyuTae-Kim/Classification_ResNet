@@ -121,7 +121,7 @@ def res_stack(x, filters, blocks, stride=2, epsilon=1.001e-5, name=None):
 def stack_fn(x):
     x = res_stack(x, 64, 3, name='conv2')
     x = res_stack(x, 128, 4, name='conv3')
-    x = res_stack(x, 256, 23, name='conv4')
+    x = res_stack(x, 256, 6, name='conv4') # 6->23
     x = res_stack(x, 512, 3, stride=1, name='conv5')
     
     return x

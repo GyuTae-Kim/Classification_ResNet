@@ -1,6 +1,4 @@
 import argparse
-import os
-import tensorflow as tf
 
 
 class BaseOptions(object):
