@@ -83,3 +83,23 @@ def visual_learning_rate(lr, path):
     plt.ylabel('Learning rate')
     plt.savefig(os.path.join(path, 'learning_rate.png'))
     plt.clf()
+
+def visual_accuracy(accuracy, val_accuracy, path):
+    plt.plot(accuracy, label='train')
+    plt.plot(val_accuracy, label='valid')
+    plt.tight_layout()
+    plt.xlabel('Epoch')
+    plt.ylabel('accuracy')
+    plt.legend(loc='lower right')
+    plt.savefig(os.path.join(path, 'accuracy.png'))
+    plt.clf()
+    
+def visual_loss(loss, val_loss, path):
+    plt.plot(loss, label='train')
+    plt.plot(val_loss, label='valid')
+    plt.tight_layout()
+    plt.xlabel('Epoch')
+    plt.ylabel('loss')
+    plt.legend(loc='upper right')
+    plt.savefig(os.path.join(path, 'loss.png'))
+    plt.clf()

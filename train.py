@@ -16,7 +16,8 @@ import numpy as np
 from models.resnet50v2 import ResNet50V2
 from utils.dataset import make_ds, make_test_ds
 from utils.memory import Memory
-from utils.visualize import visual_confusion_matrix, visual_count_label, visual_f1score, visual_learning_rate
+from utils.visualize import visual_confusion_matrix, visual_count_label, visual_f1score,\
+    visual_learning_rate, visual_loss, visual_accuracy
 from utils.callbacks import LRCallback, ModelSaverCallback
 from utils.general import cosine_lr_decay, linear_lr_decay, check_run_path
 from options.train_option import TrainOptions
@@ -32,10 +33,10 @@ def train(configs):
     # load model
     model = ResNet50V2(configs)
     if configs['optimizer']['adam']:
-        opt = 'adam'
+        opt = tf.keras.optimizers.Adam(learning_rate=configs['optimizer']['init_lr'])
     else:
-        opt = 'sgd'
-    dummy = tf.random.normal((1, *configs['model_param']['input_shape']), dtype=tf.float32)
+        opt = tf.keras.optimizers.SGD(learning_rate=configs['optimizer']['init_lr'], momentum=configs['optimizer']['momentum'])
+    dummy = tf.random.normal((1, *configs['model_param']['input_shape']), dtype='float')
     model(dummy)
     del dummy
     model.compile(
@@ -44,9 +45,9 @@ def train(configs):
         metrics=[
             'accuracy',
             metrics.Precision(),
-            #*(metrics.Precision(name=f'precision{i}', class_id=i) for i in range(n_cls)),
+            *(metrics.Precision(name=f'precision{i}', class_id=i) for i in range(n_cls)),
             metrics.Recall(),
-            #*(metrics.Recall(name=f'recall{i}', class_id=i) for i in range(n_cls)),
+            *(metrics.Recall(name=f'recall{i}', class_id=i) for i in range(n_cls)),
         ]
     )
     model.summary()
@@ -70,8 +71,7 @@ def train(configs):
         callbacks=callbacks,
         batch_size=configs['param']['batch_size'],
         epochs=configs['param']['n_epochs'],
-        initial_epoch=0,
-        use_multiprocessing=True
+        initial_epoch=0
     )
     
     # testing
@@ -81,9 +81,10 @@ def train(configs):
     
     # visualize
     print('Test Matched {} / {}'.format(np.sum(submission['target'] == submission['pred']), submission['target'].shape[0]))
+    visual_accuracy(history['accuracy'], history['val_accuracy'])
+    visual_loss(history['loss'], history['val_loss'])
     visual_confusion_matrix(submission, configs['param']['run_path'])
     visual_learning_rate(mem.train_log['lr'], configs['param']['run_path'])
-    """
     visual_f1score(
         history['precision'],
         history['recall'],
@@ -91,7 +92,6 @@ def train(configs):
         [history[f'recall{i}'] for i in range(n_cls)],
         configs['param']['run_path']
     )
-    """
 
 def set_configs(configs):
     if configs['param']['continue_train_path']:

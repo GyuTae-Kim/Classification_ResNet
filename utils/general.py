@@ -9,6 +9,9 @@ import numpy as np
 import math
 
 
+PI = tf.constant(math.pi, dtype='float')
+
+
 def decode_jpg(image_size=(800, 800)):
     def wrapper(file, label=None, image_size=image_size):
         bits = tf.io.read_file(file)
@@ -90,9 +93,13 @@ def remove_all(path):
             os.remove(f.path)
 
 def cosine_lr_decay(epoch, lrf):
-    return lambda e, lr: lr * (((1. - math.cos(e * math.pi / epoch)) / 2) * (lrf - 1.) + 1.)
+    epoch = tf.constant(epoch, dtype='float')
+    lrf = tf.constant(lrf, dtype='float')
+    return lambda e, lr: lr * (((1. - tf.cos(e * PI / epoch)) / 2) * (lrf - 1.) + 1.)
 
 def linear_lr_decay(epoch, lrf):
+    epoch = tf.constant(epoch, dtype='float')
+    lrf = tf.constant(lrf, dtype='float')
     return lambda e, lr: lr * ((1 - (e / (epoch - 1))) * (1 - lrf) + 1)
 
 def check_run_path():

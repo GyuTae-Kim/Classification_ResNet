@@ -32,7 +32,7 @@ def _find_files(basepath, cls):
     for c in sorted(cls):
         files = glob(os.path.join(basepath, c, '*'))
         count += [len(files)]
-    minimum = min(count) // 4
+    minimum = min(count)
     
     for c in sorted(cls):
         files = shuffle(glob(os.path.join(basepath, c, '*')), random_state=1024)[:minimum]
