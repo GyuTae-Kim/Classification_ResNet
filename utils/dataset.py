@@ -79,13 +79,11 @@ def make_test_ds(configs):
     
     _, _, test_files, test_labels = load_data(configs)
     test_labels = tf.one_hot(test_labels, depth=configs['param']['n_cls'])
-    test_ds = tf.data.Dataset.from_tensor_slices(test_files, test_labels)
+    test_ds = tf.data.Dataset.from_tensor_slices((test_files, test_labels))
     test_ds = (
         test_ds
         .map(decoder)
         .batch(configs['param']['batch_size'])
-        .cache()
-        .prefetch(AUTO)
     )
     
-    return test_ds, tf.one_hot(test_labels, depth=configs['param']['n_cls'])
+    return test_ds, test_labels

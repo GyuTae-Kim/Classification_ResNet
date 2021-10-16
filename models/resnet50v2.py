@@ -87,8 +87,6 @@ def feature_extract(input_shape=None,
                                            cache_subdir='models',
                                            file_hash=file_hash)
         model.load_weights(weights_path)
-    elif weights is not None:
-        model.load_weights(weights)
     
     return model
 

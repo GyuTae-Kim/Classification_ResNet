@@ -32,8 +32,8 @@ def visual_count_label(train_labels, val_labels, path):
     print('---------------------------------')
     print('Total:', len(arg_train) + len(arg_val))
     
-def visual_confusion_matrix(submission, path):
-    conf = calculate_confusion_matrix(submission['target'], submission['pred'])
+def visual_confusion_matrix(submission, n_cls, path):
+    conf = calculate_confusion_matrix(submission, n_cls)
     acc = np.trace(conf) / float(np.sum(conf))
     misclass = 1 - acc
     
