@@ -29,7 +29,7 @@ def _find_files(basepath, cls):
         append_files = append_path(basepath, c)(files)
         for p in append_files[minimum:]:
             os.remove(p)
-        rst += append_files.tolist()
+        rst += append_files[:minimum].tolist()
     
     return rst
 
@@ -38,7 +38,4 @@ if __name__ == '__main__':
     train_base = '../k-fashion/training'
     val_base = '../k-fashion/validation'
     
-    train_paths = load_data(train_base)
-    val_paths = load_data(val_base)
-    
-    
+    train_paths, val_paths = load_data(train_base, val_base)
