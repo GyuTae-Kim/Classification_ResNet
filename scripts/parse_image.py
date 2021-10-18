@@ -1,7 +1,6 @@
 import os
 from glob import glob
 
-import numpy as np
 import cv2
 
 from sklearn.utils import shuffle
