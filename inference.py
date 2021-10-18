@@ -30,8 +30,8 @@ def test(configs):
     dummy = tf.random.normal((1, *configs['model_param']['input_shape']), dtype='float')
     model(dummy)
     del dummy
-    print(configs['param']['load_weights'])
     latest = tf.train.latest_checkpoint(configs['param']['load_weights'])
+    tf.train.Checkpoint.restore(latest).assert_consumed()
     model.load_weights(latest)
     model.compile(
         optimizer='sgd',
@@ -45,7 +45,6 @@ def test(configs):
     # testing
     submission['pred'] = model.predict(test_ds)
     submission['pred'] = np.argmax(submission['pred'], 1)
-    
     submission['target'] = np.argmax(submission['target'], 1)
     
     # visualize

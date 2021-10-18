@@ -42,10 +42,10 @@ def augment_using_layers(aug):
     def wrapper(x, y=None, aug=aug):
         x = aug(x)
         
-        if y is None:
-            return x
-        else:
+        if y:
             return x, y
+        else:
+            return x
     
     return wrapper
 

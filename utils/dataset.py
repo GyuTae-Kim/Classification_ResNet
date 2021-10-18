@@ -13,6 +13,7 @@ def load_data(configs):
     train_base = os.path.join(configs['param']['datapath'], 'training')
     val_base = os.path.join(configs['param']['datapath'], 'validation')
     cls = find_class(train_base)
+    configs['param']['cls'] = cls
     configs['param']['n_cls'] = len(cls)
     
     train_paths, count_train_labels = _find_files(train_base, cls)
@@ -58,7 +59,6 @@ def make_ds(configs):
         .map(decoder)
         .batch(configs['param']['batch_size'])
         .map(wrap_aug)
-        .shuffle(256)
         .cache()
         .prefetch(AUTO)
     )

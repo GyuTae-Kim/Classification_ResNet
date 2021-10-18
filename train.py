@@ -1,6 +1,8 @@
 import yaml
 import os
+import warnings
 
+warnings.simplefilter('ignore')
 # os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
 import tensorflow as tf
@@ -29,12 +31,15 @@ def train(configs):
     n_cls = configs['param']['n_cls']
     visual_count_label(train_labels, val_labels, configs['param']['run_path'])
     
-    # load model
-    model = ResNet50V2(configs)
+    # load optimizer
     if configs['optimizer']['adam']:
         opt = tf.keras.optimizers.Adam(learning_rate=configs['optimizer']['init_lr'])
     else:
         opt = tf.keras.optimizers.SGD(learning_rate=configs['optimizer']['init_lr'], momentum=configs['optimizer']['momentum'])
+    opt = mixed_precision.LossScaleOptimizer(opt, loss_scale='dynamic')
+    
+    # load model
+    model = ResNet50V2(configs)
     dummy = tf.random.normal((1, *configs['model_param']['input_shape']), dtype='float')
     model(dummy)
     del dummy
