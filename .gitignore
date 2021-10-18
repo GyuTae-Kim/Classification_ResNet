@@ -134,3 +134,4 @@ dmypy.json
 checkpoint
 log.data*
 runs/run-*
+*.pth
